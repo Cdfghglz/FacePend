@@ -4,11 +4,18 @@
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
+#include "common.h"
+#include "pendulum.h"
+#include "pendulum.cpp"
 #include "transform.h"
 #include "camera.h"
 
 static const int DISPLAY_WIDTH = 800;
 static const int DISPLAY_HEIGHT = 600;
+static const int ARM_LENGTH = 1.5;
+static const int SIM_SPEED = 10;
+const Point<int> CENTER = {0, 0};
+static const double INIT_THETA = 0.89;
 
 int main(int argc, char** argv)
 {
@@ -67,15 +74,25 @@ int main(int argc, char** argv)
 	                          };
 
 	Mesh mesh(vertices, sizeof(vertices)/sizeof(vertices[0]), indices, sizeof(indices)/sizeof(indices[0]));
-	Mesh monkey("./res/monkey3.obj");
-	Shader shader("./res/basicShader");
-	Texture texture("./res/bricks.jpg");
+//	Mesh monkey("../res/tennisball.obj");
+	Mesh monkey("../res/ee.obj");
+//	Mesh monkey("../res/cube.obj");
+	Shader shader("../shd/basicShader");
+	Texture texture("../res/bricks.jpg");
+
 	Transform transform;
 	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
+
+	Pendulum<double>* pendulum = new Pendulum<double>(ARM_LENGTH, 10);
+	pendulum->reset(INIT_THETA);
+
+//	get to initial position
+	transform.GetRot()->x = 1;
+
 	while(isRunning)
 	{
 		while(SDL_PollEvent(&e))
@@ -89,14 +106,18 @@ int main(int argc, char** argv)
 		float sinCounter = sinf(counter);
 		float absSinCounter = abs(sinCounter);
 
-		//transform.GetPos()->x = sinCounter;
-		transform.GetRot()->y = counter * 100;
+		pendulum->increment(0);
+		Point<double> pos = pendulum->getPosition();
+		std::cout << pos.x << std::endl;
+		transform.GetPos()->x = pos.x;
+		transform.GetPos()->y = - pos.y;
+//		transform.GetRot()->y = counter * 1;
 		//transform.GetRot()->z = counter * 100;
-		//transform.GetScale()->x = absSinCounter;
-		//transform.GetScale()->y = absSinCounter;
+//		transform.GetScale()->x = absSinCounter;
+//		transform.GetScale()->y = absSinCounter;
 
 		shader.Bind();
-		texture.Bind();
+//		texture.Bind();
 		shader.Update(transform, camera);
 		monkey.Draw();
 		//mesh.Draw();

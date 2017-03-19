@@ -23,10 +23,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/rpavlik-cmake-module
 include(CreateLaunchers)
 include(MSVCMultipleProcessCompile) # /MP
 
-if(INCLUDE_DISTRIB)
-	add_subdirectory(distrib)
-endif(INCLUDE_DISTRIB)
-
 include_directories(
 	external/AntTweakBar-1.16/include/
 	external/glfw-3.1.2/include/GLFW/
@@ -34,11 +30,14 @@ include_directories(
 	external/glew-1.13.0/include/
 	external/assimp-3.0.1270/include/
 	external/bullet-2.81-rev2613/src/
-	.
+    headers/
+    src/
+    .
 )
 
 set(ALL_LIBS
 	${OPENGL_LIBRARY}
+    ${SDL2_LIBRARY}
 	glfw
 	GLEW_1130
 )
@@ -51,12 +50,31 @@ add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
-add_executable(gl_pendulum 
-	src/gl_pendulum.cpp
-	src/shader.cpp
-	src/shader.hpp
+set(SOURCES
+    src/main.cpp
+    src/mesh.cpp
+    src/display.cpp
+    src/shader.cpp
+    src/obj_loader.cpp
+    src/texture.cpp
+    src/stb_image.c
+    src/pendulum.cpp
 )
-target_link_libraries(gl_pendulum
+
+set(HEADERS
+    headers/stb_image.h
+)
+
+
+add_executable(gl_pendulum ${HEADERS} ${SOURCES})
+
+set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
+include(FindPkgConfig)
+pkg_search_module(SDL2 REQUIRED sdl2)
+include_directories(${SDL2_INCLUDE_DIRS})
+set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
+
+target_link_libraries(${PROJECT_NAME}
 	${ALL_LIBS}
 )
 # Xcode and Visual working directories
