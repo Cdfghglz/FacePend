@@ -1,8 +1,9 @@
 #include "display.h"
 #include <GL/glew.h>
 #include <iostream>
+#include <glfw3.h>
 
-Display::Display(int width, int height, const std::string& title)
+Display::Display(int width, int height, const std::string& title) : width_(width), height_(height)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -45,4 +46,18 @@ void Display::Clear(float r, float g, float b, float a)
 void Display::SwapBuffers()
 {
 	SDL_GL_SwapWindow(m_window);
+}
+
+Point<double> Display::getCursor() {
+
+	// Get mouse position
+	Point<double> p;
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+
+	p.x = -((double)x/width_*2 - 1);
+	p.y = (double)y/height_*2 - 1;
+
+	return p;
+
 }

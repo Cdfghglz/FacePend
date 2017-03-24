@@ -106,15 +106,14 @@ int main(int argc, char** argv)
 		float sinCounter = sinf(counter);
 		float absSinCounter = abs(sinCounter);
 
+		Point<double> cursor = display.getCursor();
+		pendulum->setCenter(cursor);
+
 		pendulum->increment(0);
 		Point<double> pos = pendulum->getPosition();
-		std::cout << pos.x << std::endl;
+
 		transform.GetPos()->x = pos.x;
 		transform.GetPos()->y = - pos.y;
-//		transform.GetRot()->y = counter * 1;
-		//transform.GetRot()->z = counter * 100;
-//		transform.GetScale()->x = absSinCounter;
-//		transform.GetScale()->y = absSinCounter;
 
 		shader.Bind();
 //		texture.Bind();

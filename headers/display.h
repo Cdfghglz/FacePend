@@ -3,6 +3,7 @@
 
 #include <string>
 #include <SDL2/SDL.h>
+#include "common.h"
 
 class Display
 {
@@ -13,10 +14,14 @@ public:
 	void SwapBuffers();
 
 	virtual ~Display();
+	Point<double> getCursor();
+
 protected:
 private:
 	void operator=(const Display& display) {}
 	Display(const Display& display) {}
+
+	int width_, height_;
 
 	SDL_Window* m_window;
 	SDL_GLContext m_glContext;

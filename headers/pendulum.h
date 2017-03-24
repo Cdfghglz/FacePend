@@ -16,7 +16,7 @@ protected:
     double mass_;
     double theta_ = 0;
     double theta_d_ = 0;
-	Point<T> center_ = getPosition();
+	Point<T> center_ = {0, 0};
     Point<double> state_ = {0, 0};
 
 public:
@@ -27,6 +27,7 @@ public:
     void reset(double theta_init);
     void increment(double crtl_torque);
 	Point<T> getPosition();
+	void setCenter(Point<T> center);
 
     //todo: make the dynamical equations memebers of a more generic class e.g. DynamicalSystem, solvable by a generic
     //solver

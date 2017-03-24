@@ -20,8 +20,6 @@ void Pendulum<T>::setLen(int len) {
 template <typename T>
 Point<T> Pendulum<T>::getPosition(){
 
-    std::cout << theta_ << " - theta" << std::endl;
-
     Point<T> pos;
     pos.x = (T)(-sin(theta_)*length_);
     pos.y = (T)(cos(theta_)*length_);
@@ -30,6 +28,11 @@ Point<T> Pendulum<T>::getPosition(){
     pos.y += center_.y;
 
     return pos;
+}
+
+template <typename T>
+void Pendulum<T>::setCenter(Point<T> center){
+    center_ = center;
 }
 
 template <typename T>
