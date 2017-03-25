@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <iostream>
+#include "common.h"
 
 struct Camera
 {
@@ -19,6 +21,25 @@ public:
 	{
 		return projection * glm::lookAt(pos, pos + forward, up);
 	}
+
+	void viewToWorld(Point<double>* pt) {
+
+		glm::mat4 view = glm::lookAt(pos, pos + forward, up);
+		glm::mat4 invVP = glm::inverse(projection * view);
+
+		glm::vec4 pt_hom(pt->x, -pt->y, 1.0f, 1.0f);
+
+		glm::vec4 res = invVP * pt_hom;
+
+		res = pos.z/res.z * (- res);
+
+		pt->x = res.x;
+		pt->y = res.y;
+
+		std::cout << res.x << " and " << res.y << " and " << res.z << std::endl;
+
+	}
+
 
 	//void MoveForward(float amt)
 	//{

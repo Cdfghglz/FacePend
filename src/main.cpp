@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	Texture texture("../res/bricks.jpg");
 
 	Transform transform;
-	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, -20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
 	SDL_Event e;
 	bool isRunning = true;
@@ -103,10 +103,8 @@ int main(int argc, char** argv)
 
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		float sinCounter = sinf(counter);
-		float absSinCounter = abs(sinCounter);
-
 		Point<double> cursor = display.getCursor();
+		camera.viewToWorld(&cursor);
 		pendulum->setCenter(cursor);
 
 		pendulum->increment(0);

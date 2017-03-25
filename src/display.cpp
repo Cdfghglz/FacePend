@@ -55,8 +55,8 @@ Point<double> Display::getCursor() {
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 
-	p.x = -((double)x/width_*2 - 1);
-	p.y = (double)y/height_*2 - 1;
+	p.x = ((double)x/width_*2 - 1);
+	p.y = -((double)y/height_*2 - 1);
 
 	return p;
 
