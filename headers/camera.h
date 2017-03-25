@@ -25,49 +25,19 @@ public:
 	void viewToWorld(Point<double>* pt) {
 
 		glm::mat4 view = glm::lookAt(pos, pos + forward, up);
-		glm::mat4 invVP = glm::inverse(projection * view);
+		glm::mat4 invVP = glm::inverse(view * projection);
 
 		glm::vec4 pt_hom(pt->x, -pt->y, 1.0f, 1.0f);
+		glm::vec4 beamV4 = invVP * pt_hom;
 
-		glm::vec4 res = invVP * pt_hom;
+		glm::vec3 plane(0.0f, 0.0f, 1.0f);
+		glm::vec3 beamV3(beamV4.x, beamV4.y, beamV4.z);
+		double scale = pos.z/(glm::dot(plane, beamV3));
 
-		res = pos.z/res.z * (- res);
-
-		pt->x = res.x;
-		pt->y = res.y;
-
-		std::cout << res.x << " and " << res.y << " and " << res.z << std::endl;
+		pt->x = beamV3.x * scale;
+		pt->y = beamV3.y * scale;
 
 	}
-
-
-	//void MoveForward(float amt)
-	//{
-	//	pos += forward * amt;
-	//}
-
-	//void MoveRight(float amt)
-	//{
-	//	pos += glm::cross(up, forward) * amt;
-	//}
-
-	//void Pitch(float angle)
-	//{
-	//	glm::vec3 right = glm::normalize(glm::cross(up, forward));
-
-	//	forward = glm::vec3(glm::normalize(glm::rotate(angle, right) * glm::vec4(forward, 0.0)));
-	//	up = glm::normalize(glm::cross(forward, right));
-	//}
-
-	//void RotateY(float angle)
-	//{
-	//	static const glm::vec3 UP(0.0f, 1.0f, 0.0f);
-
-	//	glm::mat4 rotation = glm::rotate(angle, UP);
-
-	//	forward = glm::vec3(glm::normalize(rotation * glm::vec4(forward, 0.0)));
-	//	up = glm::vec3(glm::normalize(rotation * glm::vec4(up, 0.0)));
-	//}
 
 protected:
 private:
