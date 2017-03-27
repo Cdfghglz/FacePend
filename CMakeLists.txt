@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 2.6)
 project (gl_pendulum)
 
 find_package(OpenGL REQUIRED)
+find_package(OpenCV REQUIRED)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if( CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR )
     message( FATAL_ERROR "Please select another Build Directory ! (and give it a clever name, like bin_Visual2012_64bits/)" )
@@ -59,6 +61,7 @@ set(SOURCES
     src/texture.cpp
     src/stb_image.c
     src/pendulum.cpp
+    src/tracker.cpp
 )
 
 set(HEADERS
@@ -73,10 +76,15 @@ include(FindPkgConfig)
 pkg_search_module(SDL2 REQUIRED sdl2)
 include_directories(${SDL2_INCLUDE_DIRS})
 set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
+set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
 
+include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}
 	${ALL_LIBS}
 )
+
+#target_link_libraries(${ProjectName} ${OpenCV_LIBS})
+
 # Xcode and Visual working directories
 set_target_properties(gl_pendulum PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")
 create_target_launcher(gl_pendulum WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
