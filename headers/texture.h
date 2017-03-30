@@ -3,10 +3,12 @@
 
 #include <string>
 #include <GL/glew.h>
+#include <opencv2/core/mat.hpp>
 
 class Texture
 {
 public:
+	Texture(const cv::Mat& mat, GLenum minFilter, GLenum magFilter);
 	Texture(const std::string& fileName);
 
 	void Bind();

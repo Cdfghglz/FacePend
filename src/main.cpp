@@ -24,12 +24,14 @@ int main(int argc, char** argv)
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
 
-	Mesh monkey("../res/ee.obj");
+	Mesh star("../res/ee.obj");
+	Mesh background("../res/plane.obj");
 	Shader shader("../shd/basicShader");
-//	Texture texture("../res/bricks.jpg");
-
+	Shader bgShader("../shd/basicShader");
+	Texture texture("../res/bricks.jpg");
 
 	Transform transform;
+	Transform trs;
 	Camera camera(glm::vec3(0.0f, 0.0f, -20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
 	SDL_Event e;
@@ -39,8 +41,9 @@ int main(int argc, char** argv)
 	pendulum->reset(INIT_THETA);
 
 //	get to initial position
+	trs.GetRot()->x = 3.14;
+	trs.GetPos()->z = -15;
 	transform.GetRot()->x = 1;
-
 	while(isRunning)
 	{
 		while(SDL_PollEvent(&e))
@@ -51,7 +54,8 @@ int main(int argc, char** argv)
 
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		tracker.captureFrame();
+		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
 		Point<double> centerPos = tracker.detectFace();
 //		Point<double> centerPos = display.getCursor();
 
@@ -64,10 +68,17 @@ int main(int argc, char** argv)
 		transform.GetPos()->x = pos.x;
 		transform.GetPos()->y = - pos.y;
 
+//		background
+		bgShader.Bind();
+		capTexture.Bind();
+		shader.Update(trs, camera);
+		background.Draw();
+
+//		pendulum
 		shader.Bind();
-//		texture.Bind();
+		texture.Bind();
 		shader.Update(transform, camera);
-		monkey.Draw();
+		star.Draw();
 
 		display.SwapBuffers();
 		SDL_Delay(1);

@@ -15,7 +15,7 @@ class Tracker {
 public:
 	Tracker(const int camId, const int displayWidth, int* displayHeight);
 
-	void captureFrame();
+	cv::Mat captureFrame();
 	::Point<double> detectFace();
 	cv::Mat getFrame();
 

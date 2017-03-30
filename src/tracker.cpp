@@ -22,17 +22,18 @@ Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight) :
 
 }
 
-void Tracker::captureFrame() {
+cv::Mat Tracker::captureFrame() {
 
 	Mat rawFrame;
 	cap.read(rawFrame);
 
-	cvtColor(rawFrame, rawFrame, COLOR_BGR2GRAY);
-	resize(rawFrame, displayFrame, Size(frameWidth_, frameHeight_), 0, 0, CV_8UC1);
+	cvtColor(rawFrame, displayFrame, COLOR_BGR2GRAY);
+	resize(displayFrame, displayFrame, Size(frameWidth_, frameHeight_), 0, 0, CV_8UC1);
 //	std::cout << displayFrame.size() << std::endl;
 
 	equalizeHist(displayFrame, displayFrame);
 
+	return rawFrame;
 }
 
 cv::Mat Tracker::getFrame() {
@@ -52,8 +53,8 @@ cv::Mat Tracker::getFrame() {
 
 		//todo: return all faces with sizes
 		if (i == 0){
-			faceCenter.x = ((double)center.x/frameWidth_*2 - 1);
-			faceCenter.y = ((double)center.y/frameHeight_*2 - 1);
+			faceCenter.x = -((double)center.x/frameWidth_*2 - 1);
+			faceCenter.y = -((double)center.y/frameHeight_*2 - 1);
 
 //			std::cout << faceCenter.x << " and " << faceCenter.y << std::endl;
 		}
