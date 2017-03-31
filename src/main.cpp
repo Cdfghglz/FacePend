@@ -16,6 +16,7 @@ static const int DISPLAY_WIDTH = 400;
 static int DISPLAY_HEIGHT;
 static const int ARM_LENGTH = 2;
 static const double INIT_THETA = 0.89;
+static const float BG_INIT_Z = 1.0f;
 
 int main(int argc, char** argv)
 {
@@ -40,10 +41,14 @@ int main(int argc, char** argv)
 	Pendulum<double>* pendulum = new Pendulum<double>(ARM_LENGTH, 10);
 	pendulum->reset(INIT_THETA);
 
-//	get to initial position
+//	get background to the initial position and appropriate scale
+	Point<double> p = {0, 1.0f};
+	camera.viewToWorld(&p, BG_INIT_Z);
 	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
-	trs.GetPos()->z = -15;			// todo: manage automatically
-	trs.GetScale()->y = (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;	// scale according to the screen ratio
+	trs.GetPos()->z = BG_INIT_Z;	// Bring bg plane to initial z distance
+	trs.GetScale()->x = -p.y * 2;
+	trs.GetScale()->y = -p.y * 2 * (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;
+
 	transform.GetRot()->x = 1;		// Bring model to the initial orientation
 
 	while(isRunning)

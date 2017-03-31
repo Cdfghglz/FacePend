@@ -22,7 +22,7 @@ public:
 		return projection * glm::lookAt(pos, pos + forward, up);
 	}
 
-	void viewToWorld(Point<double>* pt) {
+	void viewToWorld(Point<double>* pt, const float z = 0) {
 
 		glm::mat4 view = glm::lookAt(pos, pos + forward, up);
 		glm::mat4 invVP = glm::inverse(view * projection);
@@ -32,7 +32,7 @@ public:
 
 		glm::vec3 plane(0.0f, 0.0f, 1.0f);
 		glm::vec3 beamV3(beamV4.x, beamV4.y, beamV4.z);
-		double scale = pos.z/(glm::dot(plane, beamV3));
+		double scale = (pos.z + z)/(glm::dot(plane, beamV3));
 
 		pt->x = beamV3.x * scale;
 		pt->y = beamV3.y * scale;
