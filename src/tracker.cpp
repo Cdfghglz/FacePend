@@ -12,7 +12,10 @@ Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight) :
 	cap.open(camId_);
 	if (!cap.isOpened())
 		std::cout << "Could not open video capture!";
-	*displayHeight = DISPLAY_WIDTH * CV_CAP_PROP_FRAME_WIDTH/CV_CAP_PROP_FRAME_HEIGHT;
+
+	cv::Mat testFrame;
+	cap.read(testFrame);
+	*displayHeight = DISPLAY_WIDTH * testFrame.rows/testFrame.cols;
 
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, *displayHeight);
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, DISPLAY_WIDTH);

@@ -41,9 +41,11 @@ int main(int argc, char** argv)
 	pendulum->reset(INIT_THETA);
 
 //	get to initial position
-	trs.GetRot()->x = 3.14;
-	trs.GetPos()->z = -15;
-	transform.GetRot()->x = 1;
+	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
+	trs.GetPos()->z = -15;			// todo: manage automatically
+	trs.GetScale()->y = (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;	// scale according to the screen ratio
+	transform.GetRot()->x = 1;		// Bring model to the initial orientation
+
 	while(isRunning)
 	{
 		while(SDL_PollEvent(&e))
