@@ -55,8 +55,8 @@ cv::Point3d Tracker::detectFace() {
 
 		//todo: return all faces with sizes
 		if (i == 0){
-			faceCenter.x = -((double)center.x/frameWidth_*2 - 1);
-			faceCenter.y = -((double)center.y/frameHeight_*2 - 1);
+			faceCenter.x = ((double)center.x/frameWidth_*2 - 1);
+			faceCenter.y = ((double)center.y/frameHeight_*2 - 1);
 
 			faceCenter.z = sqrt(( faces[0].height )^2 * ( faces[0].width )^2) * relFaceScale_;
 //			std::cout << faceCenter.x << " and " << faceCenter.y << std::endl;

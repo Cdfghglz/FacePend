@@ -17,8 +17,8 @@ static const int DISPLAY_WIDTH = 400;
 static int DISPLAY_HEIGHT;
 static const int ARM_LENGTH = 2;
 static const double INIT_THETA = 0.89;
-static const float BG_INIT_Z = 1.0f;
-static const float REL_FACE_SCALE = -0.6f;
+static const float BG_INIT_Z = -1.0f;
+static const float REL_FACE_SCALE = 0.2f;
 
 int main(int argc, char** argv)
 {
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 	Transform transform;
 	Transform indicTr;
 	Transform trs;
-	Camera camera(glm::vec3(0.0f, 0.0f, -20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
 	SDL_Event e;
 	bool isRunning = true;
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 //	get background to the initial position and appropriate scale
 	Point<double> p = {0, 1.0f};
 	camera.viewToWorld(&p, BG_INIT_Z);
-	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
+//	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
 	trs.GetPos()->z = BG_INIT_Z;	// Bring bg plane to initial z distance
 	trs.GetScale()->x = -p.y * 2;
 	trs.GetScale()->y = -p.y * 2 * (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	indicTr.GetScale()->x = 0.2;
 	indicTr.GetScale()->y = 0.2;
 	indicTr.GetRot()->x = 3.14;			// Bring bg plane normal to camera
-	indicTr.GetPos()->z = -3.0;	// Bring bg plane to initial z distance
+	indicTr.GetPos()->z = 3.0;	// Bring bg plane to initial z distance
 
 	transform.GetRot()->x = 1.57;		// Bring model to the initial orientation
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
 		pendulum->setCenter(faceCenter2d);
 		transform.GetPos()->z = faceCenter.z;
-		indicTr.GetPos()->z = -faceCenter.z;
+		indicTr.GetPos()->z = faceCenter.z;
 
 		pendulum->increment(0);
 		Point<double> pos = pendulum->getPosition();
