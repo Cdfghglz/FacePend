@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include "opencv2/core/mat.hpp"
 
 #include "display.h"
 #include "mesh.h"
@@ -17,14 +18,16 @@ static int DISPLAY_HEIGHT;
 static const int ARM_LENGTH = 2;
 static const double INIT_THETA = 0.89;
 static const float BG_INIT_Z = 1.0f;
+static const float REL_FACE_SCALE = -0.6f;
 
 int main(int argc, char** argv)
 {
 
-	Tracker tracker(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT);
+	Tracker tracker(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT, REL_FACE_SCALE);
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
 
+	Mesh indicator("../res/plane.obj");
 	Mesh star("../res/ee.obj");
 	Mesh background("../res/plane.obj");
 	Shader shader("../shd/basicShader");
@@ -32,6 +35,7 @@ int main(int argc, char** argv)
 	Texture texture("../res/bricks.jpg");
 
 	Transform transform;
+	Transform indicTr;
 	Transform trs;
 	Camera camera(glm::vec3(0.0f, 0.0f, -20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
@@ -49,7 +53,12 @@ int main(int argc, char** argv)
 	trs.GetScale()->x = -p.y * 2;
 	trs.GetScale()->y = -p.y * 2 * (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;
 
-	transform.GetRot()->x = 1;		// Bring model to the initial orientation
+	indicTr.GetScale()->x = 0.2;
+	indicTr.GetScale()->y = 0.2;
+	indicTr.GetRot()->x = 3.14;			// Bring bg plane normal to camera
+	indicTr.GetPos()->z = -3.0;	// Bring bg plane to initial z distance
+
+	transform.GetRot()->x = 1.57;		// Bring model to the initial orientation
 
 	while(isRunning)
 	{
@@ -63,17 +72,23 @@ int main(int argc, char** argv)
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
-		Point<double> centerPos = tracker.detectFace();
+		cv::Point3d faceCenter = tracker.detectFace();
 //		Point<double> centerPos = display.getCursor();
 
-		camera.viewToWorld(&centerPos);
-		pendulum->setCenter(centerPos);
+		camera.viewToWorld(&faceCenter);
+		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
+		pendulum->setCenter(faceCenter2d);
+		transform.GetPos()->z = faceCenter.z;
+		indicTr.GetPos()->z = -faceCenter.z;
 
 		pendulum->increment(0);
 		Point<double> pos = pendulum->getPosition();
 
 		transform.GetPos()->x = pos.x;
 		transform.GetPos()->y = - pos.y;
+
+		indicTr.GetPos()->x = faceCenter2d.x;
+		indicTr.GetPos()->y = - faceCenter2d.y;
 
 //		background
 		bgShader.Bind();
@@ -86,6 +101,10 @@ int main(int argc, char** argv)
 		texture.Bind();
 		shader.Update(transform, camera);
 		star.Draw();
+
+//		indicator
+		shader.Update(indicTr, camera);
+		indicator.Draw();
 
 		display.SwapBuffers();
 		SDL_Delay(1);
