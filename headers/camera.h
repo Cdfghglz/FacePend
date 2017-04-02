@@ -37,7 +37,7 @@ public:
 
 		glm::vec3 plane(0.0f, 0.0f, 1.0f);
 		glm::vec3 beamV3(beamV4.x, beamV4.y, beamV4.z);
-		double scale = (pos.z + projectionZ)/(glm::dot(plane, beamV3));
+		double scale = (pos.z - projectionZ)/(glm::dot(plane, beamV3));
 
 		pt->x = beamV3.x * scale;
 		pt->y = beamV3.y * scale;
@@ -53,7 +53,7 @@ public:
 
 		glm::vec3 plane(0.0f, 0.0f, 1.0f);
 		glm::vec3 beamV3(beamV4.x, beamV4.y, beamV4.z);
-		double scale = (pos.z + projectionZ)/(glm::dot(plane, beamV3));
+		double scale = (pos.z - projectionZ)/(glm::dot(plane, beamV3));
 
 		pt->x = beamV3.x * scale;
 		pt->y = beamV3.y * scale;

@@ -58,8 +58,11 @@ cv::Point3d Tracker::detectFace() {
 			faceCenter.x = ((double)center.x/frameWidth_*2 - 1);
 			faceCenter.y = ((double)center.y/frameHeight_*2 - 1);
 
-			faceCenter.z = sqrt(( faces[0].height )^2 * ( faces[0].width )^2) * relFaceScale_;
-//			std::cout << faceCenter.x << " and " << faceCenter.y << std::endl;
+//			some magic numbers, computed by fitting the equation y=c1/x+c2 with face sizes (x) at distances from cam (y)
+			float c1 = -231.0f, c2 = 21.0f;
+			faceCenter.z = c2 + c1 / (sqrt(( faces[0].height )^2 * ( faces[0].width )^2) );
+
+//			std::cout << faceCenter.x << " and " << faceCenter.y << " and " << faceCenter.z << std::endl;
 		}
 
 	}

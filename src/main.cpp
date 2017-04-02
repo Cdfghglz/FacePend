@@ -17,8 +17,8 @@ static const int DISPLAY_WIDTH = 400;
 static int DISPLAY_HEIGHT;
 static const int ARM_LENGTH = 2;
 static const double INIT_THETA = 0.89;
-static const float BG_INIT_Z = -1.0f;
-static const float REL_FACE_SCALE = 0.2f;
+static const float BG_INIT_Z = -10.0f;
+static const float REL_FACE_SCALE = 180.002f;
 
 int main(int argc, char** argv)
 {
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 	pendulum->reset(INIT_THETA);
 
 //	get background to the initial position and appropriate scale
-	Point<double> p = {0, 1.0f};
+	Point<double> p = {0.0f, 1.0f};
 	camera.viewToWorld(&p, BG_INIT_Z);
 //	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
 	trs.GetPos()->z = BG_INIT_Z;	// Bring bg plane to initial z distance
@@ -66,6 +66,14 @@ int main(int argc, char** argv)
 		{
 			if(e.type == SDL_QUIT)
 				isRunning = false;
+//			else if (e.type == SDL_KEYDOWN) {
+//				transform.GetPos()->z += 0.5f;
+//				std::cout<< transform.GetPos()->z << std::endl;
+//			}
+//			else if (e.type == SDL_KEYUP) {
+//				transform.GetPos()->z -= 0.5f;
+//				std::cout << transform.GetPos()->z << std::endl;
+//			}
 		}
 
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
