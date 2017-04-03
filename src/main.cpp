@@ -27,7 +27,6 @@ int main(int argc, char** argv)
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
 
-	Mesh indicator("../res/plane.obj");
 	Mesh star("../res/ee.obj");
 	Mesh background("../res/plane.obj");
 	Shader shader("../shd/basicShader");
@@ -35,7 +34,6 @@ int main(int argc, char** argv)
 	Texture texture("../res/bricks.jpg");
 
 	Transform transform;
-	Transform indicTr;
 	Transform trs;
 	Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
 
@@ -48,15 +46,9 @@ int main(int argc, char** argv)
 //	get background to the initial position and appropriate scale
 	Point<double> p = {0.0f, 1.0f};
 	camera.viewToWorld(&p, BG_INIT_Z);
-//	trs.GetRot()->x = 3.14;			// Bring bg plane normal to camera
 	trs.GetPos()->z = BG_INIT_Z;	// Bring bg plane to initial z distance
 	trs.GetScale()->x = -p.y * 2;
 	trs.GetScale()->y = -p.y * 2 * (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;
-
-	indicTr.GetScale()->x = 0.2;
-	indicTr.GetScale()->y = 0.2;
-	indicTr.GetRot()->x = 3.14;			// Bring bg plane normal to camera
-	indicTr.GetPos()->z = 3.0;	// Bring bg plane to initial z distance
 
 	transform.GetRot()->x = 1.57;		// Bring model to the initial orientation
 
@@ -86,17 +78,13 @@ int main(int argc, char** argv)
 		camera.viewToWorld(&faceCenter);
 		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
 		pendulum->setCenter(faceCenter2d);
-		transform.GetPos()->z = faceCenter.z;
-		indicTr.GetPos()->z = faceCenter.z;
+		transform.GetPos()->z = (float)faceCenter.z;
 
 		pendulum->increment(0);
 		Point<double> pos = pendulum->getPosition();
 
-		transform.GetPos()->x = pos.x;
-		transform.GetPos()->y = - pos.y;
-
-		indicTr.GetPos()->x = faceCenter2d.x;
-		indicTr.GetPos()->y = - faceCenter2d.y;
+		transform.GetPos()->x = (float)pos.x;
+		transform.GetPos()->y = - (float)pos.y;
 
 //		background
 		bgShader.Bind();
@@ -109,10 +97,6 @@ int main(int argc, char** argv)
 		texture.Bind();
 		shader.Update(transform, camera);
 		star.Draw();
-
-//		indicator
-		shader.Update(indicTr, camera);
-		indicator.Draw();
 
 		display.SwapBuffers();
 		SDL_Delay(1);
