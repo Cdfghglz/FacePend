@@ -4,41 +4,49 @@
 #include <cmath>
 #include "headers/common.h"
 
+#include <boost/array.hpp>
+#include <boost/numeric/odeint.hpp>
+
 template <typename T>
 class Pendulum {
 
 protected:
-    const double g_ = 9.81;
-    const double steps_ = 0.01;
+	const double g_ = 9.81;
+    const double dt_ = 0.1;
+	// todo: reimplement
+    const double steps_ = 0.05;
     double d_damping_ = 0.02;
-    double s_damping_ = 0.009;
+    double s_damping_ = 0.003;
+	Point<T> center_ = {0, 0};
     int length_;
     double mass_;
-    double theta_ = 0;
-    double theta_d_ = 0;
-	Point<T> center_ = {0, 0};
-    Point<double> state_ = {0, 0};
+	typedef boost::array<double, 2> state_type;
+	state_type x_;
+	boost::numeric::odeint::runge_kutta4<state_type> solverRk4_;
 
 public:
+
     Pendulum();
     Pendulum(int len, double mass);
 
-    void setLen(int theta_init);
-    void reset(double theta_init);
-    void increment(double crtl_torque);
-	Point<T> getPosition();
+	void setLen(int len);
 	void setCenter(Point<T> center);
+	Point<T> getEndPosition();
 
-    //todo: make the dynamical equations memebers of a more generic class e.g. DynamicalSystem, solvable by a generic
-    //solver
-    //todo: put set of equations with arguments into a contaier of functions to be fed to a generic solver
-    double eq1(double arg[]);
-    double eq2(double arg[]);
+    void reset(double theta_init);
+	void step();
 
-    double udot(double theta, double theta_d);
+	friend class System;
+
+    class System{
+	private:
+		const Pendulum* pendulum;
+    public:
+		friend class Pendulum;
+		System(const Pendulum* pendulum);
+		void operator()(state_type &x , state_type &dxdt , double t);
+    };
+
 };
-
-template <typename T>
-double solver(Pendulum<T>* pend, double args[], double var, double steps);
 
 #endif //QT_PENDULUM_PENDULUM_H

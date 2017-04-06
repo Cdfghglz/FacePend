@@ -13,14 +13,13 @@
 class Tracker {
 
 public:
-	Tracker(const int camId, const int displayWidth, int* displayHeight, const float REL_FACE_SCALE);
+	Tracker(const int camId, const int displayWidth, int* displayHeight);
 
 	cv::Mat captureFrame();
 	cv::Point3d detectFace();
 	cv::Mat getFrame();
 
 private:
-	const float relFaceScale_;
 	const int camId_;
 //	todo: naming convention!
 	int frameWidth_;

@@ -4,7 +4,7 @@
 
 using namespace cv;
 
-Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight, const float REL_FACE_SCALE) : camId_(camId), relFaceScale_(REL_FACE_SCALE) {
+Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight) : camId_(camId) {
 
 	if (!face_cascade.load("../res/haarcascade_frontalface_alt.xml"))
 		std::cout << "Face cascade could not be loaded!";
@@ -42,6 +42,7 @@ cv::Mat Tracker::captureFrame() {
 cv::Mat Tracker::getFrame() {
 	return displayFrame;
 }
+
 cv::Point3d Tracker::detectFace() {
 
 	cv::Point3d faceCenter;

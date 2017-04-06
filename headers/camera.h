@@ -38,7 +38,7 @@ public:
 		glm::mat4 view = glm::lookAt(pos, pos + forward, up);
 		glm::mat4 invVP = glm::inverse(view * projection);
 
-		glm::vec4 pt_hom(pt->x, -pt->y, 1.0f, 1.0f);
+		glm::vec4 pt_hom(pt->x, pt->y, 1.0f, 1.0f);
 		glm::vec4 beamV4 = invVP * pt_hom;
 
 		glm::vec3 plane(0.0f, 0.0f, 1.0f);
