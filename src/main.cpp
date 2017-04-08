@@ -105,6 +105,7 @@ int main(int argc, char** argv)
 
 		display.SwapBuffers();
 		SDL_Delay(1);
+
 	}
 
 	return 0;

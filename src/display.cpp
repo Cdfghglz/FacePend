@@ -61,3 +61,7 @@ Point<double> Display::getCursor() {
 	return p;
 
 }
+
+void Display::captureCursor() {
+	mousePosQ.push(getCursor());
+}
