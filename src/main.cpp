@@ -56,6 +56,8 @@ int main(int argc, char** argv)
 
 	while(isRunning)
 	{
+		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+
 		while(SDL_PollEvent(&e))
 		{
 			if(e.type == SDL_QUIT)
@@ -76,23 +78,22 @@ int main(int argc, char** argv)
 			}
 		}
 
-		ctr += 0.1f;
 
 		display.captureCursor();
 		Point<double> accel = display.getCursorAccel();
 		std::cout << accel << std::endl;
-		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
 //		cv::Point3d faceCenter = tracker.detectFace();
 		Point<double> centerPos = display.getCursor();
+//		ctr += 0.1f;
 //		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
 		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};
 
 		camera.viewToWorld(&faceCenter);
 		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
-		pendulum->setCenter(faceCenter2d, accel);
+		pendulum->setCenter(faceCenter2d, accel); // todo: implement the acceleration dependence on depth
 		transform.GetPos()->z = (float)faceCenter.z;
 
 		pendulum->step();

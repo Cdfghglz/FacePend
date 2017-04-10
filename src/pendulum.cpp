@@ -57,9 +57,9 @@ void Pendulum<T>::System::operator()(state_type &x, state_type &dxdt, double t){
     Point<double> G = {0, -pendulum->g_/pendulum->length_ * sin(x[0])};
 
     dxdt[0] = x[1];
-    dxdt[1] = G.y  - sgn(x[1]) * 0.5 +
-            + 100 * L.y * pendulum->centerAccel_.x +
-            + 100 * L.x * pendulum->centerAccel_.y ;
+    dxdt[1] = G.y  - sgn(x[1]) * pendulum->viscDamping_
+            + 100 * L.y * pendulum->centerAccel_.x // todo: implement depth instead of magic number 100
+            - 100 * L.x * pendulum->centerAccel_.y ;
 }
 
 template<typename T>

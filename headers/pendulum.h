@@ -11,12 +11,11 @@ template <typename T>
 class Pendulum {
 
 protected:
-//	const double g_ = 9.81;
-	const double g_ = 0;
+	const double g_ = 9.81;
     const double dt_ = 0.1;
 	// todo: reimplement
     const double steps_ = 0.05;
-    double d_damping_ = 0.02;
+    double viscDamping_ = 0.5;
     double s_damping_ = 0.003;
 	Point<T> center_ = {0, 0};
 	Point<double> centerAccel_ = {0.0, 0.0};
