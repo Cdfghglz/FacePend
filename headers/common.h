@@ -2,10 +2,31 @@
 #define QT_PENDULUM_COMMON_H
 
 #include <vector>
+#include <iostream>
 
 template <typename T>
 struct Point{
     T x, y;
+
+    friend std::ostream& operator<<(std::ostream& os, const Point& p) {
+        std::cout << "P: " << p.x << ", "<< p.y;
+    };
+
+    Point<T> operator+ (int val) {
+        x += val;
+        y += val;
+        return *this;
+    };
+
+    Point<T> operator+ (Point<T>& p) {
+        x += p.x;
+        y += p.y;
+    };
+
+    Point<T>& operator= (const Point<T>& p) {
+        x = p.x;
+        y = p.y;
+    };
 };
 
 // todo: slow, reimplement
@@ -19,7 +40,7 @@ public:
     };
     CircBuf(const unsigned long int size) : std::vector<T>(size) { };
     void push(T val) {
-        this->erase(this->begin());
+		this->erase(this->begin());
         this->push_back(val);
     };
 };

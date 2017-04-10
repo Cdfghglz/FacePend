@@ -12,13 +12,13 @@ class Display
 public:
 	Display(int width, int height, const std::string& title);
 
-	const ulong n = 3;
 	void Clear(float r, float g, float b, float a);
 	void SwapBuffers();
 
 	virtual ~Display();
 	Point<double> getCursor();
 	void captureCursor();
+	Point<double> getCursorAccel();
 
 protected:
 private:
@@ -26,7 +26,7 @@ private:
 	Display(const Display& display) {}
 
 	int width_, height_;
-	CircBuf< Point<double> > mousePosQ;
+	CircBuf<Point<double> > mousePosQ;
 
 	SDL_Window* m_window;
 	SDL_GLContext m_glContext;

@@ -72,6 +72,9 @@ int main(int argc, char** argv)
 
 		ctr += 0.1f;
 
+		display.captureCursor();
+		Point<double> accel = display.getCursorAccel();
+		std::cout << accel << std::endl;
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);

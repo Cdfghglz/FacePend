@@ -3,8 +3,10 @@
 #include <iostream>
 #include <glfw3.h>
 
-Display::Display(int width, int height, const std::string& title) : width_(width), height_(height)
+Display::Display(int width, int height, const std::string& title) : width_(width), height_(height), mousePosQ(3)
 {
+//	mousePosQ.reserve(3);
+	std::cout << mousePosQ[0] << mousePosQ[1] << mousePosQ[2] << std::endl;
 	SDL_Init(SDL_INIT_EVERYTHING);
 
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -65,3 +67,13 @@ Point<double> Display::getCursor() {
 void Display::captureCursor() {
 	mousePosQ.push(getCursor());
 }
+
+Point<double> Display::getCursorAccel() {
+
+	Point<double> accel;
+	accel.x = (mousePosQ[2].x - mousePosQ[1].x) - (mousePosQ[1].x - mousePosQ[0].x);
+	accel.y = (mousePosQ[2].y - mousePosQ[1].y) - (mousePosQ[1].y - mousePosQ[0].y);
+
+	std::cout << mousePosQ[0] << mousePosQ[1] << mousePosQ[2] << mousePosQ[3] << mousePosQ[4] << std::endl;
+	return accel;
+};
