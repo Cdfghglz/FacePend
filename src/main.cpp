@@ -13,7 +13,7 @@
 #include "tracker.h"
 #include "camera.h"
 
-static const int DISPLAY_WIDTH = 400;
+static const int DISPLAY_WIDTH = 600;
 static int DISPLAY_HEIGHT;
 static const int ARM_LENGTH = 2;
 static const double INIT_THETA = 0.89;
@@ -68,6 +68,12 @@ int main(int argc, char** argv)
 //				transform.GetPos()->z -= 0.5f;
 //				std::cout << transform.GetPos()->z << std::endl;
 //			}
+			else if (e.type == SDL_KEYUP) {
+				Point<double> p = {0, 0};
+//				pendulum->setAccel(p);
+				pendulum->setAccel(p);
+				std::cout << "accelerations to 0" << std::endl;
+			}
 		}
 
 		ctr += 0.1f;
@@ -79,13 +85,14 @@ int main(int argc, char** argv)
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
-		cv::Point3d faceCenter = tracker.detectFace();
-//		Point<double> centerPos = display.getCursor();
+//		cv::Point3d faceCenter = tracker.detectFace();
+		Point<double> centerPos = display.getCursor();
 //		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
+		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};
 
 		camera.viewToWorld(&faceCenter);
 		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
-		pendulum->setCenter(faceCenter2d);
+		pendulum->setCenter(faceCenter2d, accel);
 		transform.GetPos()->z = (float)faceCenter.z;
 
 		pendulum->step();

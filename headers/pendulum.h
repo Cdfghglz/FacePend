@@ -11,13 +11,15 @@ template <typename T>
 class Pendulum {
 
 protected:
-	const double g_ = 9.81;
+//	const double g_ = 9.81;
+	const double g_ = 0;
     const double dt_ = 0.1;
 	// todo: reimplement
     const double steps_ = 0.05;
     double d_damping_ = 0.02;
     double s_damping_ = 0.003;
 	Point<T> center_ = {0, 0};
+	Point<double> centerAccel_ = {0.0, 0.0};
     int length_;
     double mass_;
 	typedef boost::array<double, 2> state_type;
@@ -31,6 +33,8 @@ public:
 
 	void setLen(int len);
 	void setCenter(Point<T> center);
+	void setCenter(Point<T> center, Point<double> centerAccel);
+	void setAccel(Point<double> centerAccel);
 	Point<T> getEndPosition();
 
     void reset(double theta_init);

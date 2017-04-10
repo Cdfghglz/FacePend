@@ -37,12 +37,29 @@ void Pendulum<T>::setCenter(Point<T> center){
 }
 
 template<typename T>
+void Pendulum<T>::setAccel(Point<double> centerAccel) {
+    x_[1] = 0;
+}
+
+template<typename T>
+void Pendulum<T>::setCenter(Point<T> center, Point<double> centerAccel) {
+    setCenter(center);
+    centerAccel_ = centerAccel;
+}
+
+template<typename T>
 Pendulum<T>::System::System(const Pendulum* pendulum) : pendulum(pendulum) { };
 
 template<typename T>
 void Pendulum<T>::System::operator()(state_type &x, state_type &dxdt, double t){
+
+    Point<double> L = {pendulum->length_ * sin(x[0]), -pendulum->length_ * cos(x[0])};
+    Point<double> G = {0, -pendulum->g_/pendulum->length_ * sin(x[0])};
+
     dxdt[0] = x[1];
-    dxdt[1] = - pendulum->g_/pendulum->length_ * sin(x[0]);
+    dxdt[1] = G.y  - sgn(x[1]) * 0.5 +
+            + 100 * L.y * pendulum->centerAccel_.x +
+            + 100 * L.x * pendulum->centerAccel_.y ;
 }
 
 template<typename T>
