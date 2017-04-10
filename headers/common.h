@@ -29,7 +29,7 @@ struct Point{
     };
 };
 
-// todo: slow, reimplement
+// slow, use CBuf instead
 template <typename T>
 class CircBuf : public std::vector<T> {
 public:
@@ -42,6 +42,27 @@ public:
     void push(T val) {
 		this->erase(this->begin());
         this->push_back(val);
+    };
+};
+
+template <typename T>
+class CBuf {
+private:
+    const unsigned long size;
+    unsigned long itr = 0;
+    std::vector<T> buf;
+
+public:
+    CBuf() : size(0) {};
+    CBuf(const unsigned long size) : size(size) {
+        std::vector<T> b(size);
+        buf = b;
+    };
+    T operator[] (const int pos) {
+        return buf[(itr + pos) % size];
+    };
+    void push(T item) {
+        buf.at((++itr + size - 1) % size) = item;
     };
 };
 

@@ -26,7 +26,9 @@ private:
 	Display(const Display& display) {}
 
 	int width_, height_;
-	CircBuf<Point<double> > mousePosQ;
+//	CircBuf<Point<double> > mousePosQ;
+	const unsigned long int mouseBufLen = 3;
+	CBuf<Point<double> > mousePosQ;
 
 	SDL_Window* m_window;
 	SDL_GLContext m_glContext;
