@@ -12,6 +12,7 @@
 #include "transform.h"
 #include "tracker.h"
 #include "camera.h"
+#include "kf.h"
 
 static const int DISPLAY_WIDTH = 600;
 static int DISPLAY_HEIGHT;
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
 
 	transform.GetRot()->x = 1.57;		// Bring model to the initial orientation
 
+	KF kf = KF();
 	float ctr = 0.0f;
 
 	while(isRunning)
@@ -81,12 +83,16 @@ int main(int argc, char** argv)
 
 		display.captureCursor();
 		Point<double> accel = display.getCursorAccel();
-		std::cout << accel << std::endl;
+//		camera.viewToWorld(&accel);
+//		std::cout << accel << std::endl;
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
 //		cv::Point3d faceCenter = tracker.detectFace();
 		Point<double> centerPos = display.getCursor();
+		Point<float> po = centerPos.toFloat();
+		po = kf.filter(po);
+//		centerPos = kf.filter(centerPos.toFloat());
 //		ctr += 0.1f;
 //		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
 		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};

@@ -1,7 +1,5 @@
 #include "display.h"
 #include <GL/glew.h>
-#include <iostream>
-#include <glfw3.h>
 
 Display::Display(int width, int height, const std::string& title) : width_(width), height_(height), mousePosQ(mouseBufLen)
 {

@@ -66,6 +66,7 @@ set(SOURCES
 
 set(HEADERS
     headers/stb_image.h
+    headers/kf.h
 )
 
 
