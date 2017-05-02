@@ -41,6 +41,13 @@ struct Point{
         ret.y = (float) this->y;
         return ret;
     };
+
+	Point<double> toDouble() {
+        Point<double> ret;
+        ret.x = (double) this->x;
+        ret.y = (double) this->y;
+        return ret;
+    };
 };
 
 //template<typename T>

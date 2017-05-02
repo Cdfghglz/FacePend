@@ -21,9 +21,7 @@ static const double INIT_THETA = 0.89;
 static const float BG_INIT_Z = -10.0f;
 //static const float REL_FACE_SCALE = 180.002f;
 
-int main(int argc, char** argv)
-{
-
+int main(int argc, char **argv) {
 	Tracker tracker(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT);
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
@@ -36,33 +34,33 @@ int main(int argc, char** argv)
 
 	Transform transform;
 	Transform trs;
-	Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), 70.0f, (float)DISPLAY_WIDTH/(float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), 70.0f, (float) DISPLAY_WIDTH / (float) DISPLAY_HEIGHT, 0.1f, 100.0f);
 
 	SDL_Event e;
 	bool isRunning = true;
 
-	Pendulum<double>* pendulum = new Pendulum<double>(ARM_LENGTH, 10);
+	Pendulum<double> *pendulum = new Pendulum<double>(ARM_LENGTH, 10);
 	pendulum->reset(INIT_THETA);
 
 //	get background to the initial position and appropriate scale
 	Point<double> p = {1.0f, 1.0f};
 	camera.viewToWorld(&p, BG_INIT_Z);
-	trs.GetPos()->z = BG_INIT_Z;	// Bring bg plane to initial z distance
+	trs.GetPos()->z = BG_INIT_Z;    // Bring bg plane to initial z distance
 	trs.GetScale()->x = p.x;
-	trs.GetScale()->y = p.x * (float)DISPLAY_HEIGHT/DISPLAY_WIDTH;
+	trs.GetScale()->y = p.x * (float) DISPLAY_HEIGHT / DISPLAY_WIDTH;
 
-	transform.GetRot()->x = 1.57;		// Bring model to the initial orientation
+	transform.GetRot()->x = 1.57;        // Bring model to the initial orientation
 
-	KF kf = KF();
-	float ctr = 0.0f;
+	KF kf = KF(2);
+	display.captureCursor();
+	kf.initialize(display.getCursor().toFloat());
+//	float ctr = 0.0f;
 
-	while(isRunning)
-	{
+	while (isRunning) {
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		while(SDL_PollEvent(&e))
-		{
-			if(e.type == SDL_QUIT)
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT)
 				isRunning = false;
 //			else if (e.type == SDL_KEYDOWN) {
 //				transform.GetPos()->z += 0.5f;
@@ -81,32 +79,37 @@ int main(int argc, char** argv)
 		}
 
 
-		display.captureCursor();
-		Point<double> accel = display.getCursorAccel();
 //		camera.viewToWorld(&accel);
 //		std::cout << accel << std::endl;
 
 		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
-//		cv::Point3d faceCenter = tracker.detectFace();
+#if USE_MOUSE
+		display.captureCursor();
+
 		Point<double> centerPos = display.getCursor();
-		Point<float> po = centerPos.toFloat();
-		po = kf.filter(po);
-//		centerPos = kf.filter(centerPos.toFloat());
+		Point<double> accel = display.getCursorAccel();
+
+		kf.filter(centerPos);
+		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};
+
 //		ctr += 0.1f;
 //		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
-		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};
+#else
+		cv::Point3d faceCenter = tracker.detectFace();
+		kf.filter(faceCenter);
+#endif
 
 		camera.viewToWorld(&faceCenter);
 		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
 		pendulum->setCenter(faceCenter2d, accel); // todo: implement the acceleration dependence on depth
-		transform.GetPos()->z = (float)faceCenter.z;
+		transform.GetPos()->z = (float) faceCenter.z;
 
 		pendulum->step();
 		Point<double> pos = pendulum->getEndPosition();
 
-		transform.GetPos()->x = (float)pos.x;
-		transform.GetPos()->y = (float)pos.y;
+		transform.GetPos()->x = (float) pos.x;
+		transform.GetPos()->y = (float) pos.y;
 
 //		background
 		bgShader.Bind();
