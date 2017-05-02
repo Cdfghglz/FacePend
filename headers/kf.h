@@ -15,13 +15,14 @@ private:
 //	float processCov_ = 1e-4;
 //	float measCov_ = 10.0f;
 //	float errCov_ = 0.1f;
-	float dt_ = 1/30.0f;
+	float dt_ = 1.0f/10.0f;
 	float processCov_ = 1/1000.0f;
-	float measCov_ = 10.0f;
-	float errCov_ = 0.5f;
+	float measCov_ = 1.0f/1000.0f;
+	float errCov_ = 1000.0f/1.0f;
 
 public:
-	KF(int stateSize) : KF_(2 * stateSize, stateSize, 0) { };
+//	KF(int stateSize) : KF_(2 * stateSize, stateSize, 0) { };
+	KF(int stateSize) : KF_(4, 2, 0) { };
 
 	void initialize(Point<float> mousePos) {
 
@@ -35,9 +36,21 @@ public:
 		KF_.statePre.at<float>(1) = mousePos.y;
 		KF_.statePre.at<float>(2) = 0;
 		KF_.statePre.at<float>(3) = 0;
-		setIdentity(KF_.measurementMatrix);
-		setIdentity(KF_.processNoiseCov, cv::Scalar::all(processCov_));
-		setIdentity(KF_.measurementNoiseCov, cv::Scalar::all(measCov_));
+
+		KF_.measurementMatrix = cv::Mat_<float>(2, 4) <<
+				1, 0, 0, 0,
+				0, 1, 0, 0;
+
+		KF_.processNoiseCov= cv::Mat_<float>(4, 4) <<
+		0.00025, 0.0,  0.0005,  0.0,
+		0.0,  0.00025,  0.0,  0.0005,
+		0.0005,  0.0,  0.001,  0.0,
+		0.0,  0.0005,  0.0,  0.001;
+
+		KF_.measurementNoiseCov = cv::Mat_<float>(2, 2) <<
+			measCov_, 0,
+			0, measCov_;
+
 		setIdentity(KF_.errorCovPost, cv::Scalar::all(errCov_));
 	};
 
@@ -79,8 +92,10 @@ public:
 		cv::Mat estimated = KF_.correct(matMeasurement);
 
 		std::cout << "--" << std::endl;
-		std::cout << estimated.at<float>(1) << std::endl;
-		std::cout << measurement.y << std::endl;
+		std::cout << measurement.x << " | " << measurement.y << std::endl;
+		std::cout << matMeasurement << std::endl;
+//		std::cout << estimated.size << " | " << estimated.at<float>(0) << " | " << estimated.at<float>(3) << std::endl;
+		std::cout << estimated << std::endl;
 
 		measurement.x = (double)estimated.at<float>(0);
 		measurement.y = (double)estimated.at<float>(1);
