@@ -51,9 +51,9 @@ int main(int argc, char **argv) {
 
 	transform.GetRot()->x = 1.57;        // Bring model to the initial orientation
 
-	KF kf = KF(2);
+	KF<4,2> kf;
 	display.captureCursor();
-	kf.initialize(display.getCursor().toFloat());
+	kf.initialize();
 //	float ctr = 0.0f;
 
 	while (isRunning) {

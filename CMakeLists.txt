@@ -1,3 +1,4 @@
+# CMake entry point
 cmake_minimum_required(VERSION 2.6)
 project(gl_pendulum)
 
@@ -6,6 +7,10 @@ find_package(OpenCV REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fext-numeric-literals")
 
+find_package(dlib REQUIRED)
+message(STATUS "Using dlib-${dlib_VERSION}")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(-DUSE_MOUSE=1)
 
 # Compile external dependencies 
@@ -66,6 +71,9 @@ pkg_search_module(SDL2 REQUIRED sdl2)
 include_directories(${SDL2_INCLUDE_DIRS})
 set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
 set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
+set(ALL_LIBS ${ALL_LIBS} ${dlib_LIBRARIES})
+#set(ALL_LIBS ${ALL_LIBS} ${boost_LIBRARIES})
+
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}
