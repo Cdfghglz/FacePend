@@ -11,7 +11,10 @@ find_package(dlib REQUIRED)
 message(STATUS "Using dlib-${dlib_VERSION}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# options
 add_definitions(-DUSE_MOUSE=1)
+add_definitions(-DTRACK_DEBUG=1)
 
 # Compile external dependencies 
 add_subdirectory(external)
