@@ -2,13 +2,15 @@
 #include <SDL2/SDL.h>
 #include "opencv2/core/mat.hpp"
 
+#include "common.h"
+#include "pendulum.h"
+#include "pendulum.cpp"
 #include "display.h"
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
-#include "pendulum.h"
 #include "detector.h"
-#include "kf.h"
+#include "tracker.h"
 
 static const int DISPLAY_WIDTH = 600;
 static int DISPLAY_HEIGHT;
@@ -18,7 +20,9 @@ static const float BG_INIT_Z = -10.0f;
 //static const float REL_FACE_SCALE = 180.002f;
 
 int main(int argc, char **argv) {
+
 	Detector detector(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT);
+	FaceTracker tracker;
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
 
@@ -32,25 +36,23 @@ int main(int argc, char **argv) {
 	Transform trs;
 	Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), 70.0f, (float) DISPLAY_WIDTH / (float) DISPLAY_HEIGHT, 0.1f, 100.0f);
 
-	SDL_Event e;
-	bool isRunning = true;
-
-	Pendulum<double> *pendulum = new Pendulum<double>(ARM_LENGTH, 10);
+	Pendulum<double> *pendulum = new Pendulum<double>(ARM_LENGTH, 10.0);
 	pendulum->reset(INIT_THETA);
 
 //	get background to the initial position and appropriate scale
-	Point<double> p = {1.0f, 1.0f};
+	Point<double> p = {1.0, 1.0};
 	camera.viewToWorld(&p, BG_INIT_Z);
 	trs.GetPos()->z = BG_INIT_Z;    // Bring bg plane to initial z distance
-	trs.GetScale()->x = p.x;
-	trs.GetScale()->y = p.x * (float) DISPLAY_HEIGHT / DISPLAY_WIDTH;
+	trs.GetScale()->x = (float) p.x;
+	trs.GetScale()->y = (float) p.x * DISPLAY_HEIGHT / DISPLAY_WIDTH;
 
 	transform.GetRot()->x = 1.57;        // Bring model to the initial orientation
 
-	KF<4,2> kf;
+//	other inits
 	display.captureCursor();
-	kf.initialize();
-//	float ctr = 0.0f;
+	float ctr = 0.0f;
+	SDL_Event e;
+	bool isRunning = true;
 
 	while (isRunning) {
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
@@ -68,9 +70,8 @@ int main(int argc, char **argv) {
 //			}
 			else if (e.type == SDL_KEYUP) {
 				Point<double> p = {0, 0};
-//				pendulum->setAccel(p);
 				pendulum->setAccel(p);
-				std::cout << "accelerations to 0" << std::endl;
+				std::cout << "Accelerations set to 0" << std::endl;
 			}
 		}
 
@@ -86,19 +87,23 @@ int main(int argc, char **argv) {
 		Point<double> centerPos = display.getCursor();
 		Point<double> accel = display.getCursorAccel();
 
-		kf.filter(centerPos);
 		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 0};
 
-//		ctr += 0.1f;
-//		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
+		FaceResult faceResult;
+
+		ctr += 0.1f;
+		if (ctr <= 10) faceResult.valid = 1;
+		else if (ctr >= 20) ctr = 0.0f;
+		faceResult.facePos = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
+
 #else
 		cv::Point3d faceCenter = detector.detectFace();
-		kf.filter(faceCenter);
 #endif
 
-		camera.viewToWorld(&faceCenter);
-		::Point<double> faceCenter2d = {faceCenter.x, faceCenter.y};
-		pendulum->setCenter(faceCenter2d, accel); // todo: implement the acceleration dependence on depth
+		tracker.update(faceResult);
+
+		faceResult.facePos = camera.viewToWorld(tracker.getPosition());
+		pendulum->setCenter(faceResult.facePos.x, faceResult.facePos.y, accel); // todo: implement the acceleration dependence on depth
 		transform.GetPos()->z = (float) faceCenter.z;
 
 		pendulum->step();

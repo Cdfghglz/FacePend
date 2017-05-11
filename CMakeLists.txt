@@ -45,8 +45,26 @@ add_definitions(
         -D_CRT_SECURE_NO_WARNINGS
 )
 
-set(SOURCES
+# HEADERS
+set(SOURCE_FILES
+        headers/common.h
+        headers/camera.h
+        headers/transform.h
+        headers/stb_image.h
+        headers/mesh.h
+        headers/display.h
+        headers/shader.h
+        headers/obj_loader.h
+        headers/texture.h
+        headers/pendulum.h
+        headers/detector.h
+        headers/tracker.h
+        )
+
+# SOURCES
+set(SOURCE_FILES ${SOURCE_FILES}
         src/main.cpp
+        src/common.cpp
         src/mesh.cpp
         src/display.cpp
         src/shader.cpp
@@ -55,15 +73,10 @@ set(SOURCES
         src/stb_image.c
         src/pendulum.cpp
         src/detector.cpp
+        src/tracker.cpp
         )
 
-set(HEADERS
-        headers/stb_image.h
-        headers/kf.h
-        )
-
-
-add_executable(gl_pendulum ${HEADERS} ${SOURCES})
+add_executable(gl_pendulum ${SOURCE_FILES})
 
 set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
 include(FindPkgConfig)

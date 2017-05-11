@@ -7,6 +7,11 @@
 #include "opencv2/highgui.hpp"
 #include "headers/common.h"
 
+struct FaceResult {
+	bool valid;
+	cv::Point3d facePos;
+};
+
 class Detector{
 
 public:

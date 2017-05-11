@@ -1,5 +1,6 @@
-#include "headers/pendulum.h"
+#include "headers/common.h"
 #include <iostream>
+#include "pendulum.h"
 
 template <typename T>
 Pendulum<T>::Pendulum() { };
@@ -42,12 +43,6 @@ void Pendulum<T>::setAccel(Point<double> centerAccel) {
 }
 
 template<typename T>
-void Pendulum<T>::setCenter(Point<T> center, Point<double> centerAccel) {
-    setCenter(center);
-    centerAccel_ = centerAccel;
-}
-
-template<typename T>
 Pendulum<T>::System::System(const Pendulum* pendulum) : pendulum(pendulum) { };
 
 template<typename T>
@@ -68,4 +63,16 @@ void Pendulum<T>::step() {
     Pendulum::System syst(this);
     solverRk4_.do_step(syst, x_ , 0.0, this->dt_);
 
+}
+
+template<typename T>
+void Pendulum<T>::setCenter(Point<T> center, Point<double> centerAccel) {
+    setCenter(center);
+    centerAccel_ = centerAccel;
+}
+
+template<typename T>
+void Pendulum<T>::setCenter(T x, T y, Point<double> centerAccel) {
+    Point<double> center(x, y);
+    setCenter(center, centerAccel);
 }

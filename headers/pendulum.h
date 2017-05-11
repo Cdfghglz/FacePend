@@ -32,6 +32,7 @@ public:
 
 	void setLen(int len);
 	void setCenter(Point<T> center);
+	void setCenter(T x, T y, Point<double> centerAccel);
 	void setCenter(Point<T> center, Point<double> centerAccel);
 	void setAccel(Point<double> centerAccel);
 	Point<T> getEndPosition();

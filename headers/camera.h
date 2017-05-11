@@ -33,6 +33,11 @@ public:
 
 	}
 
+	cv::Point3d viewToWorld(cv::Point3d pt) {
+		viewToWorld(&pt);
+		return pt;
+	}
+
 	void viewToWorld(Point<double>* pt, const float projectionZ = 0) {
 
 		glm::mat4 view = glm::lookAt(pos, pos + forward, up);
