@@ -54,7 +54,7 @@ set(SOURCES
         src/texture.cpp
         src/stb_image.c
         src/pendulum.cpp
-        src/tracker.cpp
+        src/detector.cpp
         )
 
 set(HEADERS
@@ -72,8 +72,6 @@ include_directories(${SDL2_INCLUDE_DIRS})
 set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
 set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
 set(ALL_LIBS ${ALL_LIBS} ${dlib_LIBRARIES})
-#set(ALL_LIBS ${ALL_LIBS} ${boost_LIBRARIES})
-
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}
@@ -84,15 +82,3 @@ target_link_libraries(${PROJECT_NAME}
 set_target_properties(gl_pendulum PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")
 create_target_launcher(gl_pendulum WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-# SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
-# SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
-
-if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode")
-    add_custom_command(
-            TARGET gl_pendulum POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/gl_pendulum${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/pendulum/"
-    )
-
-elseif (${CMAKE_GENERATOR} MATCHES "Xcode")
-
-endif (NOT ${CMAKE_GENERATOR} MATCHES "Xcode")

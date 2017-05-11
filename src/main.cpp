@@ -6,12 +6,8 @@
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
-#include "common.h"
 #include "pendulum.h"
-#include "pendulum.cpp"
-#include "transform.h"
-#include "tracker.h"
-#include "camera.h"
+#include "detector.h"
 #include "kf.h"
 
 static const int DISPLAY_WIDTH = 600;
@@ -22,7 +18,7 @@ static const float BG_INIT_Z = -10.0f;
 //static const float REL_FACE_SCALE = 180.002f;
 
 int main(int argc, char **argv) {
-	Tracker tracker(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT);
+	Detector detector(0, DISPLAY_WIDTH, &DISPLAY_HEIGHT);
 
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "OpenGL");
 
@@ -82,7 +78,7 @@ int main(int argc, char **argv) {
 //		camera.viewToWorld(&accel);
 //		std::cout << accel << std::endl;
 
-		Texture capTexture(tracker.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		Texture capTexture(detector.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
 #if USE_MOUSE
 		display.captureCursor();
@@ -96,7 +92,7 @@ int main(int argc, char **argv) {
 //		ctr += 0.1f;
 //		cv::Point3d faceCenter = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
 #else
-		cv::Point3d faceCenter = tracker.detectFace();
+		cv::Point3d faceCenter = detector.detectFace();
 		kf.filter(faceCenter);
 #endif
 

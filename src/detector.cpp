@@ -1,10 +1,10 @@
-#include "tracker.h"
+#include "detector.h"
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 
 using namespace cv;
 
-Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight) : camId_(camId) {
+Detector::Detector(const int camId, const int DISPLAY_WIDTH, int* displayHeight) : camId_(camId) {
 
 	if (!face_cascade.load("../res/haarcascade_frontalface_alt.xml"))
 		std::cout << "Face cascade could not be loaded!";
@@ -25,7 +25,7 @@ Tracker::Tracker(const int camId, const int DISPLAY_WIDTH, int* displayHeight) :
 
 }
 
-cv::Mat Tracker::captureFrame() {
+cv::Mat Detector::captureFrame() {
 
 	Mat rawFrame;
 	cap.read(rawFrame);
@@ -39,11 +39,11 @@ cv::Mat Tracker::captureFrame() {
 	return rawFrame;
 }
 
-cv::Mat Tracker::getFrame() {
+cv::Mat Detector::getFrame() {
 	return displayFrame;
 }
 
-cv::Point3d Tracker::detectFace() {
+cv::Point3d Detector::detectFace() {
 
 	cv::Point3d faceCenter;
 	std::vector<Rect> faces;

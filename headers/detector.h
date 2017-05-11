@@ -1,19 +1,16 @@
-//
-// Created by cdfghglz on 26.3.2017.
-//
 
-#ifndef GL_PENDULUM_TRACKER_H
-#define GL_PENDULUM_TRACKER_H
+#ifndef GL_PENDULUM_DETECTOR_H
+#define GL_PENDULUM_DETECTOR_H
 
 #include "opencv2/objdetect.hpp"
 #include "opencv2/core/mat.hpp"
 #include "opencv2/highgui.hpp"
 #include "headers/common.h"
 
-class Tracker {
+class Detector{
 
 public:
-	Tracker(const int camId, const int displayWidth, int* displayHeight);
+	Detector(const int camId, const int displayWidth, int* displayHeight);
 
 	cv::Mat captureFrame();
 	cv::Point3d detectFace();
@@ -21,7 +18,6 @@ public:
 
 private:
 	const int camId_;
-//	todo: naming convention!
 	int frameWidth_;
 	int frameHeight_;
 
@@ -31,4 +27,4 @@ private:
 
 };
 
-#endif //GL_PENDULUM_TRACKER_H
+#endif //GL_PENDULUM_DETECTOR_H
