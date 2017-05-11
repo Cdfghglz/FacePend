@@ -5,6 +5,14 @@
 #ifndef GL_PENDULUM_TRACKER_H
 #define GL_PENDULUM_TRACKER_H
 
+static const double dt = 1.0/10.;
+static const double measCov = 1.0/1000.0;
+static const double f1 = 0.0100;
+static const double f2 = 1.0;
+static const double procCov1 = f1 * 0.00025;
+static const double procCov2 = f1 * f2 * f2 * 0.0005;
+static const double procCov3 = f1 * f2 * f2 * f2 * 0.001;
+
 #include "dlib/filtering.h"
 #include "dlib/matrix.h"
 #include "common.h"
@@ -17,8 +25,8 @@ private:
 	unsigned int missedCtr_;
 
 //	CBuf posBuf_(bufLen_);
-	dlib::kalman_filter<4, 2> trackingFilter_;
-	dlib::kalman_filter<4, 2> voidFilter_;
+	dlib::kalman_filter<6, 3> trackingFilter_;
+	dlib::kalman_filter<6, 3> voidFilter_;
 	cv::Point3d currentPos_;
 
 	void initTrackingFilter();

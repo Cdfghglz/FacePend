@@ -10,33 +10,35 @@ void Tracker::initTrackingFilter() {
 
 	using namespace dlib;
 
-	float dt = 1.0f/10.f;
-	float measCov = 1.0f/1000.0f;
-
-	matrix<double, 4, 4> transitionMat;
+	matrix<double, 6, 6> transitionMat;
 	transitionMat =
-			1, 0, dt, 0,
-			0, 1, 0, dt,
-			0, 0, 1, 0,
-			0, 0, 0, 1;
+			1, 0, 0, dt, 0, 0,
+			0, 1, 0, 0, dt, 0,
+			0, 0, 1, 0, 0, dt,
+			0, 0, 0, 1, 0, 0,
+			0, 0, 0, 0, 1, 0,
+			0, 0, 0, 0, 0, 1;
 
-
-	matrix<double, 2, 4> measurementMat;
+	matrix<double, 3, 6> measurementMat;
 	measurementMat =
-			1, 0, 0, 0,
-			0, 1, 0, 0;
+			1, 0, 0, 0, 0, 0,
+			0, 1, 0, 0, 0, 0,
+			0, 0, 1, 0, 0, 0;
 
-	matrix<double, 4, 4> processNoiseCov;
+	matrix<double, 6, 6> processNoiseCov;
 	processNoiseCov =
-			0.00025, 0.0,  0.0005,  0.0,
-			0.0,  0.00025,  0.0,  0.0005,
-			0.0005,  0.0,  0.001,  0.0,
-			0.0,  0.0005,  0.0,  0.001;
+			procCov1, 0.0, 0.0, procCov2, 0.0, 0.0,
+			0.0, procCov1, 0.0, 0.0, procCov2, 0.0,
+			0.0, 0.0, procCov1, 0.0, 0.0, procCov2,
+			procCov2, 0.0, 0.0, procCov3, 0.0, 0.0,
+			0.0, procCov2, 0.0, 0.0, procCov3, 0.0,
+			0.0, 0.0, procCov2, 0.0, 0.0, procCov3;
 
-	matrix<double, 2, 2> measurementNoiseCov;
+	matrix<double, 3, 3> measurementNoiseCov;
 	measurementNoiseCov =
-			measCov, 0,
-			0, measCov;
+			measCov, 0, 0,
+			0, measCov, 0,
+			0, 0, measCov;
 
 	trackingFilter_.set_measurement_noise(measurementNoiseCov);
 	trackingFilter_.set_process_noise(processNoiseCov);
@@ -51,17 +53,19 @@ void Tracker::initVoidFilter() {
 
 void Tracker::updateFrame(cv::Point3d position){
 
-	dlib::vector<double, 2> dlibPos;
+	dlib::vector<double, 3> dlibPos;
 
 	dlibPos.x() = position.x;
 	dlibPos.y() = position.y;
+	dlibPos.z() = position.z;
 	trackingFilter_.update(dlibPos);
 
-	dlib::matrix<double, 4, 1> ret;
+	dlib::matrix<double, 6, 1> ret;
 	ret = trackingFilter_.get_predicted_next_state();
 
 	currentPos_.x = ret(0);
 	currentPos_.y = ret(1);
+	currentPos_.z = ret(2);
 
 };
 
