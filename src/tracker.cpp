@@ -1,6 +1,8 @@
 
 #include "tracker.h"
 
+static const int i = 2000;
+
 Tracker::Tracker() {
 	initTrackingFilter();
 }
@@ -73,7 +75,7 @@ void Tracker::missedFrame() {
 	missedCtr_++;
 
 	if (missedCtr_ < idleCt_) updateFrame(currentPos_);
-	else updateFrame(currentPos_/2000/(missedCtr_/20000.0));
+	else updateFrame(currentPos_/returnSmoothness_/(missedCtr_/returnSmoothness_*idleCt_));
 
 }
 

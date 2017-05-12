@@ -13,6 +13,7 @@ static const double f2 = 1.0;					// tuning parameter
 static const double procCov1 = f1 * 0.00025;
 static const double procCov2 = f1 * f2 * f2 * 0.0005;
 static const double procCov3 = f1 * f2 * f2 * f2 * 0.001;
+static const double returnSmoothness_ = 2000.0; // magic number, the higher the smoother the return behavior
 
 #include "dlib/filtering.h"
 #include "dlib/matrix.h"
