@@ -71,15 +71,9 @@ cv::Point3d Tracker::getPosition() {
 
 void Tracker::missedFrame() {
 	missedCtr_++;
-	std::cout << "missed "<< missedCtr_ << std::endl;
 
-	if (missedCtr_ < idleCt_) {
-
-		updateFrame(currentPos_);
-	}
-	else {
-		updateFrame(currentPos_/2000/(missedCtr_/20000.0));
-	}
+	if (missedCtr_ < idleCt_) updateFrame(currentPos_);
+	else updateFrame(currentPos_/2000/(missedCtr_/20000.0));
 
 }
 

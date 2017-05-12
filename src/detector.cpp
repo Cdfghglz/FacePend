@@ -6,6 +6,7 @@ using namespace cv;
 
 Detector::Detector(const int camId, const int DISPLAY_WIDTH, int* displayHeight) : camId_(camId) {
 
+	// todo: use dlib face recognition instead
 	if (!face_cascade.load("../res/haarcascade_frontalface_alt.xml"))
 		std::cout << "Face cascade could not be loaded!";
 
@@ -46,6 +47,7 @@ cv::Mat Detector::getFrame() {
 FaceResult Detector::detectFace() {
 
 	FaceResult faceRes;
+	faceRes.valid = 0;
 	std::vector<Rect> faces;
 
 	face_cascade.detectMultiScale( displayFrame, faces, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
@@ -64,8 +66,6 @@ FaceResult Detector::detectFace() {
 //			some magic numbers, computed by fitting the equation y=c1/x+c2 with face sizes (x) at distances from cam (y)
 			float c1 = -231.0f, c2 = 21.0f;
 			faceRes.facePos.z = c2 + c1 / (sqrt(( faces[0].height )^2 * ( faces[0].width )^2) );
-
-//			std::cout << faceRes.facePos.x << " and " << faceRes.facePos.y << " and " << faceRes.facePos.z << std::endl;
 		}
 
 	}

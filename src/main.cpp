@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 #ifdef TRACK_DEBUG
 	Mesh centerStar("../res/ee.obj");
-	Shader centerStarShader("../shd/basicShader");
+	Shader centerStarShader("../shd/trackDebugShader");
 	Transform centerStarTransform;
 	centerStarTransform.GetRot()->x = 1.57;        // Bring model to the initial orientation
 #endif
@@ -72,6 +72,8 @@ int main(int argc, char **argv) {
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT)
 				isRunning = false;
+#ifdef USE_MOUSE
+//			manual z control
 //			else if (e.type == SDL_KEYDOWN) {
 //				starTransform.GetPos()->z += 0.5f;
 //				std::cout<< starTransform.GetPos()->z << std::endl;
@@ -80,6 +82,7 @@ int main(int argc, char **argv) {
 //				starTransform.GetPos()->z -= 0.5f;
 //				std::cout << starTransform.GetPos()->z << std::endl;
 //			}
+#endif
 			else if (e.type == SDL_KEYUP) {
 				Point<double> p = {0, 0};
 				pendulum->setAccel(p);
@@ -141,7 +144,7 @@ int main(int argc, char **argv) {
 		centerStarTransform.GetPos()->z = (float) faceResult.facePos.z;
 		centerStarShader.Bind();
 		texture.Bind();
-		centerStarShader.Update(centerStarTransform, camera);
+		centerStarShader.Update(centerStarTransform, camera, (float) faceResult.valid);
 		centerStar.Draw();
 #endif
 
