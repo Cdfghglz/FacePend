@@ -5,10 +5,17 @@ project(gl_pendulum)
 find_package(OpenGL REQUIRED)
 find_package(OpenCV REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fext-numeric-literals")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lopenblas -fext-numeric-literals")
 
-find_package(dlib REQUIRED)
-message(STATUS "Using dlib-${dlib_VERSION}")
+find_package(dlib QUIET)
+IF (dlib_FOUND)
+    message(STATUS "Using dlib-${dlib_VERSION}")
+ELSE (dlib_FOUND)
+    message(STATUS "Dlib will be built from source")
+    set(DLIB_PATH "./external")
+    include(${DLIB_PATH}/dlib/cmake)
+    set(dlib_LIBRARIES dlib::dlib)
+ENDIF(dlib_FOUND)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
