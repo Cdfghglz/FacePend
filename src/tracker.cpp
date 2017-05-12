@@ -3,7 +3,6 @@
 
 Tracker::Tracker() {
 	initTrackingFilter();
-	initVoidFilter();
 }
 
 void Tracker::initTrackingFilter() {

@@ -106,7 +106,9 @@ int main(int argc, char **argv) {
 //		faceResult.facePos = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
 
 #else
-		cv::Point3d faceCenter = detector.detectFace();
+		FaceResult faceResult = detector.detectFace();
+		// todo: implement generic acceleration calculator in tracker.cpp, from diplay.cpp
+		Point<double> accel(0, 0);
 #endif
 
 		tracker.update(faceResult);

@@ -18,7 +18,7 @@ public:
 	Detector(const int camId, const int displayWidth, int* displayHeight);
 
 	cv::Mat captureFrame();
-	cv::Point3d detectFace();
+	FaceResult detectFace();
 	cv::Mat getFrame();
 
 private:

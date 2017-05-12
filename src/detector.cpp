@@ -43,30 +43,32 @@ cv::Mat Detector::getFrame() {
 	return displayFrame;
 }
 
-cv::Point3d Detector::detectFace() {
+FaceResult Detector::detectFace() {
 
-	cv::Point3d faceCenter;
+	FaceResult faceRes;
 	std::vector<Rect> faces;
 
 	face_cascade.detectMultiScale( displayFrame, faces, 1.1, 2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 	for ( size_t i = 0; i < faces.size(); i++ )
 	{
+		faceRes.valid = 1;
+
 		cv::Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
-		ellipse( displayFrame, center, Size( faces[i].width/2, faces[i].height/2 ), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
+//		ellipse( displayFrame, center, Size( faces[i].width/2, faces[i].height/2 ), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
 
 		//todo: return all faces with sizes
 		if (i == 0){
-			faceCenter.x = ((double)center.x/frameWidth_*2 - 1);
-			faceCenter.y = ((double)center.y/frameHeight_*2 - 1);
+			faceRes.facePos.x = ((double)center.x/frameWidth_*2 - 1);
+			faceRes.facePos.y = ((double)center.y/frameHeight_*2 - 1);
 
 //			some magic numbers, computed by fitting the equation y=c1/x+c2 with face sizes (x) at distances from cam (y)
 			float c1 = -231.0f, c2 = 21.0f;
-			faceCenter.z = c2 + c1 / (sqrt(( faces[0].height )^2 * ( faces[0].width )^2) );
+			faceRes.facePos.z = c2 + c1 / (sqrt(( faces[0].height )^2 * ( faces[0].width )^2) );
 
-//			std::cout << faceCenter.x << " and " << faceCenter.y << " and " << faceCenter.z << std::endl;
+//			std::cout << faceRes.facePos.x << " and " << faceRes.facePos.y << " and " << faceRes.facePos.z << std::endl;
 		}
 
 	}
 
-	return faceCenter;
+	return faceRes;
 }
