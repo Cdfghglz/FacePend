@@ -47,10 +47,6 @@ void Tracker::initTrackingFilter() {
 
 }
 
-void Tracker::initVoidFilter() {
-
-}
-
 void Tracker::updateFrame(cv::Point3d position){
 
 	dlib::vector<double, 3> dlibPos;
@@ -75,11 +71,24 @@ cv::Point3d Tracker::getPosition() {
 }
 
 void Tracker::missedFrame() {
-	
+	missedCtr_++;
+	std::cout << "missed "<< missedCtr_ << std::endl;
+
+	if (missedCtr_ < idleCt_) {
+
+		updateFrame(currentPos_);
+	}
+	else {
+		updateFrame(currentPos_/2000/(missedCtr_/20000.0));
+	}
+
 }
 
 // --------------------- FaceTracker
 void FaceTracker::update(FaceResult result) {
-	if (result.valid) updateFrame(result.facePos);
+	if (result.valid) {
+		missedCtr_ = 0;
+		updateFrame(result.facePos);
+	}
 	else missedFrame();
 };

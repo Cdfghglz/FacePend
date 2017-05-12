@@ -5,10 +5,11 @@
 #ifndef GL_PENDULUM_TRACKER_H
 #define GL_PENDULUM_TRACKER_H
 
+// todo: tune!
 static const double dt = 1.0/10.;
 static const double measCov = 1.0/1000.0;
-static const double f1 = 0.0100;
-static const double f2 = 1.0;
+static const double f1 = 0.0100;				// tuning parameter
+static const double f2 = 1.0;					// tuning parameter
 static const double procCov1 = f1 * 0.00025;
 static const double procCov2 = f1 * f2 * f2 * 0.0005;
 static const double procCov3 = f1 * f2 * f2 * f2 * 0.001;
@@ -21,18 +22,17 @@ static const double procCov3 = f1 * f2 * f2 * f2 * 0.001;
 
 class Tracker {
 private:
-	unsigned int bufLen_ = 10;
-	unsigned int missedCtr_;
+	unsigned int idleCt_= 10;
 
-//	CBuf posBuf_(bufLen_);
 	dlib::kalman_filter<6, 3> trackingFilter_;
-	dlib::kalman_filter<6, 3> voidFilter_;
 	cv::Point3d currentPos_;
 
 	void initTrackingFilter();
 	void initVoidFilter();
 
 public:
+	unsigned int missedCtr_ = 0;
+
 	Tracker();
 	void updateFrame(cv::Point3d position);
 	void missedFrame();

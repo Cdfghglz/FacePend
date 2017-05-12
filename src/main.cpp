@@ -65,7 +65,9 @@ int main(int argc, char **argv) {
 	bool isRunning = true;
 
 	while (isRunning) {
+
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		Texture capTexture(detector.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT)
@@ -85,12 +87,6 @@ int main(int argc, char **argv) {
 			}
 		}
 
-
-//		camera.viewToWorld(&accel);
-//		std::cout << accel << std::endl;
-
-		Texture capTexture(detector.captureFrame(), GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-
 #if USE_MOUSE
 		display.captureCursor();
 
@@ -102,8 +98,9 @@ int main(int argc, char **argv) {
 		FaceResult faceResult;
 
 		ctr += 0.1f;
-		if (ctr <= 10) faceResult.valid = 1;
-		else if (ctr >= 20) ctr = 0.0f;
+		std::cout << ctr << std::endl;
+		if (ctr >= 10) {ctr = 0.0f; faceResult.valid = 0;}
+		else if (ctr >= 5) {faceResult.valid = 1;};
 
 		faceResult.facePos = {-centerPos.x, -centerPos.y, 0};
 //		faceResult.facePos = {-centerPos.x, -centerPos.y, 8*sin(ctr)};
