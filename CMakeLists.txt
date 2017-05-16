@@ -2,11 +2,34 @@
 cmake_minimum_required(VERSION 2.6)
 project(gl_pendulum)
 
-find_package(OpenGL REQUIRED)
-find_package(OpenCV REQUIRED)
 
+# definitions / options
+add_definitions(
+        -DUSE_MOUSE=0
+        -DTRACK_DEBUG=1
+
+        -DTW_STATIC
+        -DTW_NO_LIB_PRAGMA
+        -DTW_NO_DIRECT3D
+        -DGLEW_STATIC
+        -D_CRT_SECURE_NO_WARNINGS
+)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lopenblas -fext-numeric-literals")
 
+
+# opengl
+find_package(OpenGL REQUIRED)
+set(ALL_LIBS
+        ${OPENGL_LIBRARY}
+        GLEW_1130)
+
+# opencv
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
+
+
+# dlib
 find_package(dlib QUIET)
 IF (dlib_FOUND)
     message(STATUS "Using dlib-${dlib_VERSION}")
@@ -16,21 +39,46 @@ ELSE (dlib_FOUND)
     include(${DLIB_PATH}/dlib/cmake)
     set(dlib_LIBRARIES dlib::dlib)
 ENDIF(dlib_FOUND)
+set(ALL_LIBS ${ALL_LIBS} ${dlib_LIBRARIES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-# options
-add_definitions(-DUSE_MOUSE=0)
-add_definitions(-DTRACK_DEBUG=1)
+# SDL2
+set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
+include(FindPkgConfig)
+pkg_search_module(SDL2 REQUIRED sdl2)
+include_directories(${SDL2_INCLUDE_DIRS})
+set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
 
-# Compile external dependencies 
+
+# boost
+find_package(Boost REQUIRED COMPONENTS program_options)
+if (${Boost_MAJOR_VERSION} VERSION_LESS 1 OR ${Boost_MINOR_VERSION} VERSION_LESS 58)
+    message(STATUS "Downloading odeint, since boost version too old.")
+    ExternalProject_Add(
+            ODEINT
+            URL https://github.com/headmyshoulder/odeint-v2/archive/v2.6_boost1.60.zip
+            SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/odeint_source
+            INSTALL_COMMAND  ""
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ""
+    )
+    include_directories (${CMAKE_CURRENT_BINARY_DIR}/odeint_source/include)
+else()
+    add_custom_target(ODEINT) # dependency dummy
+endif()
+include_directories (${Boost_INCLUDE_DIRS})
+
+
+# Compile external dependencies
 add_subdirectory(external)
+
 
 # On Visual 2005 and above, this module can set the debug working directory
 cmake_policy(SET CMP0026 OLD)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/rpavlik-cmake-modules-fe2273")
 include(CreateLaunchers)
 include(MSVCMultipleProcessCompile) # /MP
+
 
 include_directories(
         external/glfw-3.1.2/include/GLFW/
@@ -39,20 +87,6 @@ include_directories(
         headers/
         src/
         .
-)
-
-set(ALL_LIBS
-        ${OPENGL_LIBRARY}
-        ${SDL2_LIBRARY} glfw
-        GLEW_1130
-        )
-
-add_definitions(
-        -DTW_STATIC
-        -DTW_NO_LIB_PRAGMA
-        -DTW_NO_DIRECT3D
-        -DGLEW_STATIC
-        -D_CRT_SECURE_NO_WARNINGS
 )
 
 # HEADERS
@@ -86,20 +120,9 @@ set(SOURCE_FILES ${SOURCE_FILES}
         src/tracker.cpp
         )
 
+
 add_executable(gl_pendulum ${SOURCE_FILES})
-
-set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
-include(FindPkgConfig)
-pkg_search_module(SDL2 REQUIRED sdl2)
-include_directories(${SDL2_INCLUDE_DIRS})
-set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
-set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
-set(ALL_LIBS ${ALL_LIBS} ${dlib_LIBRARIES})
-
-include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME}
-        ${ALL_LIBS}
-        )
+target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 # Xcode and Visual working directories
 set_target_properties(gl_pendulum PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")

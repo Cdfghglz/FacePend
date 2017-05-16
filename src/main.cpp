@@ -153,5 +153,6 @@ int main(int argc, char **argv) {
 
 	}
 
+	delete pendulum;
 	return 0;
 }
