@@ -1,4 +1,3 @@
-# CMake entry point
 cmake_minimum_required(VERSION 2.6)
 project(gl_pendulum)
 
@@ -14,16 +13,35 @@ add_definitions(
         -DGLEW_STATIC
         -D_CRT_SECURE_NO_WARNINGS
 )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lopenblas -fext-numeric-literals")
+
+
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fext-numeric-literals")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lopenblas -fext-numeric-literals")
+endif()
 
 
 # opengl
 find_package(OpenGL REQUIRED)
 set(ALL_LIBS
         ${OPENGL_LIBRARY}
+        glfw
         GLEW_1130)
 
-# opencv
+
+# OpenBlas
+if(WIN32)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${project_SOURCE_DIR}/cmake")
+    include_directories(OpenBLAS_INCLUDE_DIR)
+    set(ALL_LIBS ${ALL_LIBS} ${OpenBLAS_LIB})
+endif ()
+
+
+# OpenCV
+if(WIN32)
+    set(OpenCV_DIR $ENV{OpenCV_DIR})
+endif()
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
@@ -32,26 +50,42 @@ set(ALL_LIBS ${ALL_LIBS} ${OpenCV_LIBS})
 # dlib
 find_package(dlib QUIET)
 IF (dlib_FOUND)
-    message(STATUS "Using dlib-${dlib_VERSION}")
+#    message(STATUS "Using dlib-${dlib_VERSION}")
 ELSE (dlib_FOUND)
+    set(DLIB_IN_PROJECT_BUILD 1)
     message(STATUS "Dlib will be built from source")
-    set(DLIB_PATH "./external")
+    set(DLIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external")
     include(${DLIB_PATH}/dlib/cmake)
+    include_directories(${DLIB_PATH}/dlib/include)
     set(dlib_LIBRARIES dlib::dlib)
 ENDIF(dlib_FOUND)
 set(ALL_LIBS ${ALL_LIBS} ${dlib_LIBRARIES})
 
 
 # SDL2
-set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
-include(FindPkgConfig)
-pkg_search_module(SDL2 REQUIRED sdl2)
+if(WIN32)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${project_SOURCE_DIR}/cmake")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindSDL2.cmake")
+
+    find_package(SDL2 REQUIRED)
+
+    message(STATUS "Found SDL2 ${MINGW} ${sdl2_MAJOR_VERSION}")
+    # path correction for compatibility with linux
+    string(LENGTH ${SDL2_INCLUDE_DIR} SDL2_INCLUDE_DIR_LEN)
+    math(EXPR SDL2_INCLUDE_DIR_LEN "(${SDL2_INCLUDE_DIR_LEN}-4)")
+    string(SUBSTRING ${SDL2_INCLUDE_DIR} 0 ${SDL2_INCLUDE_DIR_LEN} SDL2_INCLUDE_DIRS)
+    include_directories(${SDL2_INCLUDE_DIR})
+else()
+    set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
+    include(FindPkgConfig)
+    pkg_search_module(SDL2 REQUIRED sdl2)
+endif()
 include_directories(${SDL2_INCLUDE_DIRS})
 set(ALL_LIBS ${ALL_LIBS} ${SDL2_LIBRARIES})
 
 
 # boost
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED)
 if (${Boost_MAJOR_VERSION} VERSION_LESS 1 OR ${Boost_MINOR_VERSION} VERSION_LESS 58)
     message(STATUS "Downloading odeint, since boost version too old.")
     ExternalProject_Add(
@@ -89,6 +123,7 @@ include_directories(
         .
 )
 
+
 # HEADERS
 set(SOURCE_FILES
         headers/common.h
@@ -123,8 +158,4 @@ set(SOURCE_FILES ${SOURCE_FILES}
 
 add_executable(gl_pendulum ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
-
-# Xcode and Visual working directories
-set_target_properties(gl_pendulum PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")
-create_target_launcher(gl_pendulum WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
